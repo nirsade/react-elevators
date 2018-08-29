@@ -27,10 +27,11 @@ export default class Elevator extends React.Component {
 
     componentWillReceiveProps(newProps) {        
         if(this.props.goTo != newProps.goTo) {
-            let distance = Math.abs(this.state.location - newProps.goTo)
+            this.distance = Math.abs(this.state.location - newProps.goTo);
+            
             let elevatorStyle = {
                 'transform': 'translateY(' + (newProps.goTo * 110 * -1) + 'px)',
-                'transition': 'transform ' + (distance * 0.5) + 's'
+                'transition': 'transform ' + (this.distance * 0.5) + 's'
             }
          
             this.setState({
@@ -38,9 +39,20 @@ export default class Elevator extends React.Component {
                 location: newProps.goTo
             })
 
-            setTimeout(() => console.log('gege'), distance * 0.5 * 1000 + 2000)
+            this.interval = setInterval(() => {
+                if(this.distance > 0){
+                    this.props.onReachFloor();
+                } else {
+                    clearInterval(this.interval);
+                    setTimeout(() => this.props.onFinished(),2000)
+                }
+                this.distance--;
+            }, 500);
+
         }
     }
+
+
 
     render () {
 

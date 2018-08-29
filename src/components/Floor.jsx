@@ -4,19 +4,24 @@ import Timer from "./Timer";
 export default class Floor extends React.Component {
   constructor(props) {
     super(props);
-    this.handleButtonClick = this.handleButtonClick.bind(this);
+
     this.state = {
       floorIsActive: false,
       counter: 0
     };
+
+    this.handleButtonClick = this.handleButtonClick.bind(this);
+
   }
 
-  handleButtonClick(floorNum) {
+  handleButtonClick() {
+
     this.setState({
       floorIsActive: true,
-      counter: floorNum
+      counter: this.props.counter
     });
-    this.props.elevatorCall(floorNum);
+
+    this.props.elevatorCall(this.props.floorNumber);
   }
 
   handleTimerEnd() {

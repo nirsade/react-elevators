@@ -21,9 +21,9 @@ export default class Timer extends React.Component {
     });
   }
 
-    // componentWillUnmount() {
-    //   this.clearInterval(this.state.timer);
-    // }
+  componentWillUnmount() {
+    this.clearInterval(this.state.timer);
+  }
 
   // componentWillReceiveProps(newProps) {
   //   if(this.state.counter <= 0) {
