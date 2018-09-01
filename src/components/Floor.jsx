@@ -6,44 +6,60 @@ export default class Floor extends React.Component {
     super(props);
 
     this.state = {
-      floorIsActive: false,
-      counter: 0
+      buttonPushed: false,
+      stateCounter: 0
     };
 
     this.handleButtonClick = this.handleButtonClick.bind(this);
+    this.handleTimerEnd = this.handleTimerEnd.bind(this);
 
   }
 
   handleButtonClick() {
 
-    this.setState({
-      floorIsActive: true,
-      counter: this.props.counter
-    });
+    if (this.props.floorNumber == 0) {
+      console.log('call floor number one')
+    }
 
-    this.props.elevatorCall(this.props.floorNumber);
+    if (!this.state.buttonPushed) {
+
+      this.props.elevatorCall(this.props.floorNumber);
+
+      this.setState({
+        buttonPushed: true
+      });
+  
+    }
   }
 
   handleTimerEnd() {
     this.setState({
-      floorIsActive: false
+      buttonPushed: false,
+      stateCounter: 0
     })
   }
 
   render() {
-    const { floorNumber } = this.props;
-    let { floorIsActive, counter } = this.state;
-    let buttonClass = floorIsActive
+    const { floorNumber, counter, elevatorIsInFloor } = this.props;
+    let { buttonPushed } = this.state;
+
+    // if (counter == 0) {
+    //   buttonPushed = false;
+    // }
+    let isFloorShouldBeActive = buttonPushed && !elevatorIsInFloor
+    let buttonClass = isFloorShouldBeActive
       ? "metal linear activeFloorText"
       : "metal linear";
-
+    // if (counter == 0) {
+    //   buttonPushed = false;
+    // }
     return (
       <div className="floor">
         <div>
-          {this.props.counter !== 0 ? (
+          {isFloorShouldBeActive ? (
             <Timer 
-              counter={this.props.counter} 
-              timerEnd={()=>this.handleTimerEnd()}
+              counter={counter} 
+              timerEnd={this.handleTimerEnd}
             />
           ) : null}
         </div>

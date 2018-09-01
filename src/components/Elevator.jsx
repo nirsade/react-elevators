@@ -26,9 +26,9 @@ export default class Elevator extends React.Component {
     }
 
     componentWillReceiveProps(newProps) {        
-        if(this.props.goTo != newProps.goTo) {
+        if(this.props.goTo !== newProps.goTo) {
             this.distance = Math.abs(this.state.location - newProps.goTo);
-            
+
             let elevatorStyle = {
                 'transform': 'translateY(' + (newProps.goTo * 110 * -1) + 'px)',
                 'transition': 'transform ' + (this.distance * 0.5) + 's'
@@ -44,7 +44,7 @@ export default class Elevator extends React.Component {
                     this.props.onReachFloor();
                 } else {
                     clearInterval(this.interval);
-                    setTimeout(() => this.props.onFinished(),2000)
+                    setTimeout(() => this.props.onFinished(), 2000)
                 }
                 this.distance--;
             }, 500);
@@ -56,9 +56,8 @@ export default class Elevator extends React.Component {
 
     render () {
 
-        const buttonClassName = this.state.goingUp ? 'elevator elevatorUp' : 'elevator'
         const elevatorStyle = this.state.elevatorStyle
-        // console.log(this.state)
+
         return (
             <div style={elevatorStyle}>
                 <img className='elevator' alt='Elevator' src={elv}/>

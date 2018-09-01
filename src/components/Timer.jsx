@@ -4,12 +4,13 @@ import ding from './../mp3/ding.mp3'
 export default class Timer extends React.Component {
   constructor(props) {
     super(props);
-    console.log(props)
+
     this.state = {
       timer: null,
-      counter: props.counter,
-      dingSound: new Audio(ding)
+      counter: props.counter
     };
+
+    this.dingSound = new Audio(ding);
     this.tick = this.tick.bind(this);
   }
 
@@ -22,7 +23,7 @@ export default class Timer extends React.Component {
   }
 
   componentWillUnmount() {
-    this.clearInterval(this.state.timer);
+    clearInterval(this.state.timer);
   }
 
   // componentWillReceiveProps(newProps) {
@@ -36,9 +37,10 @@ export default class Timer extends React.Component {
   // }
 
   tick() {
-    if (this.state.counter == 1) {
+    // console.log('tich', this.state.counter)
+    if (this.state.counter <= 1) {
       clearInterval(this.state.timer);
-      this.state.dingSound.play();
+      this.dingSound.play();
       this.props.timerEnd();
     }
     this.setState({

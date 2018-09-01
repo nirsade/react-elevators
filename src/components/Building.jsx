@@ -8,126 +8,159 @@ export default class Building extends React.Component {
     super(props);
     let elevators = [];
     let floors = [];
-    let elevatorsController = [];
+    this.elevatorsController = [];
 
+    // set the building elevators
     for (let i = 0; i < props.numberOfElevators; i++) {
+      // set new elevator for the UI components
       elevators.push({
         id: i,
         goTo: 0
       });
-    }
-    for (let i = 0; i < props.numberOfFloors + 1; i++) {
-      floors.push({
-        id: props.numberOfFloors - i,
-        counter: 0
-      });
-    }
-    for (let i = 0; i < props.numberOfElevators; i++) {
-      elevatorsController.push({
+
+      // set new elevator for the calculations
+      this.elevatorsController.push({
         id: i,
         remainingTime: 0,
         currnetDestination: 0,
         commands: []
       });
     }
+      // set the building floors
+    for (let i = 0; i < props.numberOfFloors + 1; i++) {
+      floors.push({
+        id: props.numberOfFloors - i,
+        counter: 0,
+        elevatorIsInFloor: props.numberOfFloors - i === 0
+      });
+    }
+
     this.state = {
       floors,
       elevators,
-      elevatorsController
+      elevaotrsAt: [0, 0, 0]
     };
 
     this.handleElevatorCall = this.handleElevatorCall.bind(this);
   }
 
+  // find the elevator that will get the fastest to this floor
   findBestElevator(floor) {
-    let tempElevatorArray = []
+    // array that hold the elevatorsId and time to get to floor
+    let tempElevatorArray = [];
 
-    // fix this hack !
+    for (let elv of this.elevatorsController) {
+      // there is already a elevator on that floor NEED TO BE FIX
+      // if (elv.currnetDestination === floor && elv.remainingTime <= 2) {
+      //   let floors = this.state.floors;
+      //   floors[this.props.numberOfFloors - floor].elevatorIsInFloor = true;
+      //   this.setState({
+      //     floors
+      //   });
+      //   console.log("call elevator when in floor");
+      //   return -1;
+      // }
+      if (_.indexOf(this.state.elevaotrsAt, floor) !== -1) {
+        console.log("the elevator is at", this.state.elevaotrsAt, floor);
+        let floors = this.state.floors;
+        floors[this.props.numberOfFloors - floor].elevatorIsInFloor = true;
+        this.setState({
+          floors
+        });
+        return -1;
+      }
 
-    for(let elv of this.state.elevatorsController) {
-      elv.commands.push({nextFloor: floor});
-      tempElevatorArray.push({time: this.getElevatorTimeToFloor(elv), id: elv.id});
-      elv.commands.pop();
+      // find elevator time to get to the new floor
+      let remainingTime = elv.remainingTime - 2;
+      let currentFloor = elv.currnetDestination;
+      for (let command of elv.commands) {
+        remainingTime += Math.abs(currentFloor - command.nextFloor) * 0.5 + 2;
+        currentFloor = command.nextFloor;
+      }
+      // adding the new floor to the remainning time
+      remainingTime += Math.abs(currentFloor - floor) * 0.5 + 2;
+      tempElevatorArray.push({
+        time: remainingTime,
+        id: elv.id
+      });
     }
-    let bestElevator = _.minBy(tempElevatorArray, (e)=>e.time);
-    
-    return bestElevator.id;
+
+    return _.minBy(tempElevatorArray, e => e.time);
   }
 
-  callElevator(id, floor) {
-    let { elevators, elevatorsController } = this.state;
-    
+  // fire the elevator to the next floor
+  fireElevator(id, floor) {
+    let { elevators } = this.state;
+
     elevators[id].goTo = floor;
-    elevatorsController[id].remainingTime = Math.abs(floor - elevatorsController[id].currnetDestination) * 0.5 + 2;
-    elevatorsController[id].currnetDestination = floor;
-    elevatorsController[id].commands.shift();
+    this.elevatorsController[id].remainingTime =
+      Math.abs(floor - this.elevatorsController[id].currnetDestination) * 0.5 +
+      2;
+    this.elevatorsController[id].currnetDestination = floor;
+    this.elevatorsController[id].commands.shift();
+
+    let elevaotrsAt = this.state.elevaotrsAt;
+    elevaotrsAt[id] = floor;
 
     this.setState({
       elevators,
-      elevatorsController
+      elevaotrsAt
     });
+
   }
 
-  getElevatorTimeToFloor(elv) {
-    let remainingTime = elv.remainingTime - 2;
-    let currentFloor = elv.currnetDestination
-
-    for(let command of elv.commands) {
-      remainingTime += Math.abs(currentFloor - command.nextFloor) * 0.5 + 2;
-      currentFloor = command.nextFloor;
-    }
-    console.log(remainingTime)
-
-    return remainingTime;
-  }
-
+  // call after elevator reach its destination and ready for more commands
   handleElevatorFinished(id) {
-    let {elevatorsController} = this.state;
-    if(elevatorsController[id].commands.length) {
-      this.callElevator(id, elevatorsController[id].commands[0].nextFloor);
+    if (this.elevatorsController[id].commands.length) {
+      this.fireElevator(id, this.elevatorsController[id].commands[0].nextFloor);
     } else {
-      elevatorsController[id].remainingTime = 0
+      this.elevatorsController[id].remainingTime = 0;
+      let elevaotrsAt = this.state.elevaotrsAt;
+      elevaotrsAt[id] = this.elevatorsController[id].currnetDestination;
+      this.setState({
+        elevaotrsAt
+      })
     }
-    this.setState({
-      elevatorsController
-    })
   }
 
+  // handle the elevator notification for reaching a floor
   handleReachFloor(id) {
-    let {elevatorsController} = this.state;
-    elevatorsController[id].remainingTime -= 0.5;
-    this.setState({
-      elevatorsController
-    })
+    this.elevatorsController[id].remainingTime -= 0.5;
   }
 
+  // call whenever someone is pushing the elevator button
   handleElevatorCall(floorNumber) {
-    let { elevators, floors, elevatorsController } = this.state;
-    // check wich elevator will get there first
-    let id = this.findBestElevator(floorNumber);
+    let { floors, elevaotrsAt } = this.state;
 
+    // check wich elevator will get to the new floor first
+    let bestElevator = this.findBestElevator(floorNumber);
+
+    // in case there is already an elevator in the floor
+    if (bestElevator === -1) {
+      return;
+    }
+    elevaotrsAt[bestElevator.id] = floorNumber;
     // add the new times to the relevant elevator
-    let elv = elevatorsController[id];
+    let elv = this.elevatorsController[bestElevator.id];
     elv.commands.push({ nextFloor: floorNumber });
 
-    if (elv.remainingTime == 0) {
-      this.callElevator(id, floorNumber);
+    if (elv.remainingTime === 0) {
+      this.fireElevator(bestElevator.id, floorNumber);
     }
 
-    floors[
-      this.props.numberOfFloors - floorNumber
-    ].counter = this.getElevatorTimeToFloor(elv);
+    floors[this.props.numberOfFloors - floorNumber].counter = bestElevator.time;
 
     this.setState({
       floors,
-      elevatorsController
+      elevaotrsAt
     });
   }
 
   render() {
-    const { numberOfFloors, numberOfElevators } = this.props;
+
     let { elevators, floors } = this.state;
-    console.log(this.state.elevatorsController)
+
+    console.log(floors)
     return (
       <div className="buliding">
         <div className="floors">
@@ -137,6 +170,7 @@ export default class Building extends React.Component {
                 elevatorCall={f => this.handleElevatorCall(f)}
                 floorNumber={floor.id}
                 counter={floor.counter}
+                elevatorIsInFloor={floor.elevatorIsInFloor}
                 key={floor.id}
               />
             );
@@ -149,7 +183,7 @@ export default class Building extends React.Component {
                 key={elevator.id}
                 goTo={elevator.goTo}
                 onFinished={() => this.handleElevatorFinished(elevator.id)}
-                onReachFloor={()=>this.handleReachFloor(elevator.id)}
+                onReachFloor={() => this.handleReachFloor(elevator.id)}
               />
             );
           })}
