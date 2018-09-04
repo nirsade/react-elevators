@@ -19,11 +19,6 @@
   align-items: flex-end;
 }
 
-.elevatorUp {
-  margin-bottom: 220px;
-  transition: margin 2s
-}
-
 .elevator {
   height: 110px;
   width: 110px;
@@ -44,12 +39,12 @@
   display: flex;
   flex-direction: column;  
 }
+
 .timerText {
   margin-left: 15px;
   font-size: 35px;
   color: #FFF;
 }
-
 
 .floor {
   height: 103px;

@@ -7,64 +7,54 @@ export default class Floor extends React.Component {
 
     this.state = {
       buttonPushed: false,
+      buttonDisabled: false,
       stateCounter: 0
     };
 
     this.handleButtonClick = this.handleButtonClick.bind(this);
     this.handleTimerEnd = this.handleTimerEnd.bind(this);
-
   }
 
   handleButtonClick() {
-
-    if (this.props.floorNumber == 0) {
-      console.log('call floor number one')
-    }
-
-    if (!this.state.buttonPushed) {
-
+    if (!this.state.buttonPushed && !this.props.elevatorIsInFloor) {
       this.props.elevatorCall(this.props.floorNumber);
-
       this.setState({
         buttonPushed: true
       });
-  
     }
   }
 
   handleTimerEnd() {
     this.setState({
       buttonPushed: false,
+      buttonDisabled: true,
       stateCounter: 0
-    })
+    });
+    setTimeout(() => {
+      this.setState({
+        buttonDisabled: false
+      });
+    }, 2000);
   }
 
   render() {
-    const { floorNumber, counter, elevatorIsInFloor } = this.props;
-    let { buttonPushed } = this.state;
+    const { floorNumber, counter } = this.props;
+    let { buttonPushed, buttonDisabled } = this.state;
 
-    // if (counter == 0) {
-    //   buttonPushed = false;
-    // }
-    let isFloorShouldBeActive = buttonPushed && !elevatorIsInFloor
-    let buttonClass = isFloorShouldBeActive
+    let buttonClass = buttonPushed
       ? "metal linear activeFloorText"
       : "metal linear";
-    // if (counter == 0) {
-    //   buttonPushed = false;
-    // }
+
     return (
       <div className="floor">
         <div>
-          {isFloorShouldBeActive ? (
-            <Timer 
-              counter={counter} 
-              timerEnd={this.handleTimerEnd}
-            />
+          {buttonPushed ? (
+            <Timer counter={counter} timerEnd={this.handleTimerEnd} />
           ) : null}
         </div>
         <div>
           <button
+            disabled={buttonDisabled}
             className={buttonClass}
             onClick={() => this.handleButtonClick(floorNumber)}
           >
