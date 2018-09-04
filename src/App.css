@@ -1,16 +1,35 @@
-.blackline {
-  height: 7px;
-  background-color: #000000;
+.main {
+  position: absolute;
+  bottom: 0px;
+  height: 100%;
+  width: 100%;
+  overflow: auto;
+
 }
 
-.main {
-  height:100%;
+.full-height {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  height: 100%;
+}
+
+.inner {
+  position: relative;
+  height: 100%;
 }
 
 .buildingsContainer {
   display: flex;
   flex-direction: row;
-  height:100%;
+}
+
+.buliding {
+  margin: 40px;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
 }
 
 .elevators {
@@ -26,13 +45,6 @@
 
 .activeFloorText {
   color: green !important;
-}
-
-.buliding {
-  margin: 40px;
-  display: flex;
-  flex-direction: row;
-  align-items: flex-end;
 }
 
 .floors {

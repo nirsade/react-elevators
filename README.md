@@ -1,4 +1,10 @@
-This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app).
+# 'Elevators'
+
+Clone the project with this Url - https://github.com/nirsade/react-elevators.git
+In config.js file. you can set the number of buildings and elevators in each building
+  
+run npm install
+run npm start
 
 
 ### `npm start`
@@ -17,4 +23,6 @@ It correctly bundles React in production mode and optimizes the build for the be
 The build is minified and the filenames include the hashes.<br>
 Your app is ready to be deployed!
 
-See the section about [deployment](#deployment) for more information.
+
+
+This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app).

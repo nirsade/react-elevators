@@ -11,20 +11,6 @@ export default class Elevator extends React.Component {
         marginBottom: "0px"
       }
     };
-
-    this.handleClick = this.handleClick.bind(this);
-  }
-
-  handleClick() {
-    // canculating the Ui transition
-    let elevatorStyle = {
-      transform: "translateY(" + 440 + "px)",
-      transition: "transform " + 2 + "s"
-    };
-
-    this.setState({
-      elevatorStyle
-    });
   }
 
   componentWillReceiveProps(newProps) {
