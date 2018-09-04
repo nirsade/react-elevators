@@ -2,7 +2,7 @@
 
 Clone the project with this Url - https://github.com/nirsade/react-elevators.git 
 </br>
-In config.js file. you can set the number of buildings and elevators in each building
+In config.js file you can set the number of buildings and elevators in each building
 </br>
 
 run npm install
